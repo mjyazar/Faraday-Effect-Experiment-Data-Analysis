@@ -8,5 +8,12 @@ q = 1.602e-19
 m_e = 9.109e-31
 c = 2.998e8
 
+I_error = 0.00001
+
 # Gauge graph slope (B = ALPHA * I)
-ALPHA = 1
+ALPHA = 0.26 / 2
+
+SPECTRA_TO_PLOT = {
+    'Na':   [-9, -5, 0, 5, 9],
+    'HgCd': [-9, -5, 0, 5, 9],
+}
