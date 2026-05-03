@@ -10,9 +10,9 @@ def plot_spectrum(spectrum, fit_angles, fit_intensities, lamp_name, save_dir="Pl
     fig, ax = plt.subplots(figsize=(8, 5))
 
     ax.scatter(spectrum.angles, spectrum.intensities, color='red', marker='x', label='Data', zorder=3)
-    ax.plot(fit_angles, fit_intensities, color='steelblue', label='Malus fit')
+    ax.plot(fit_angles, fit_intensities, color='black', label='Malus fit')
 
-    ax.set_xlabel('Analyser angle (°)')
+    ax.set_xlabel('Analyser angle (θ°)')
     ax.set_ylabel('Intensity (a.u.)')
     ax.set_title(f'{lamp_name} — {spectrum.current}A spectrum')
     ax.legend()
@@ -34,10 +34,11 @@ def plot_spectra_combined(spectra_data, lamp_name, save_dir="Plots/Spectra"):
         ax.scatter(spectrum.angles, spectrum.intensities, color=color, marker='x', zorder=3, s=20)
         ax.plot(fit_angles, fit_intensities, color=color, label=f'{spectrum.current}A')
 
-    ax.set_xlabel('Analyser angle (°)')
+    ax.set_xlabel('Analyser angle (θ°)')
     ax.set_ylabel('Intensity')
-    ax.set_title(f'{lamp_name} — Spectra')
+    ax.set_title(f'{lamp_name} Spectra')
     ax.legend(fontsize=8, ncol=2)
+    ax.grid(True, alpha=0.3)
     fig.tight_layout()
     Path(save_dir).mkdir(parents=True, exist_ok=True)
     fig.savefig(f"{save_dir}/{lamp_name} Combined.png", dpi=150)

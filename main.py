@@ -47,7 +47,7 @@ results = {}
 
 for lamp in [na, hgcd]:
     print(f"\n{'═'*40}")
-    print(f"        {lamp.name} lamp  (λ = {lamp.wavelength*1e9:.0f} nm)")
+    print(f"        {lamp.name} lamp (λ = {lamp.wavelength*1e9:.0f} nm)")
     print(f"{'═'*40}")
 
     currents, thetas, sigmas = lamp.faraday_rotation()
@@ -121,15 +121,9 @@ for lamp in [na, hgcd]:
     plot_spectra_combined(spectra_data, lamp.name)
 
 
-
-
-
-
-
-
-print(f"\n{'═'*50}")
-print("  Cross-lamp comparison")
-print(f"{'═'*50}")
+print(f"\n{'═'*40}")
+print("         Cross-lamp comparison")
+print(f"{'═'*40}")
 
 omega_0_Na     = results['Na']['omega_0']
 sigma_omega_0_Na = results['Na']['sigma_omega_0']
