@@ -71,11 +71,12 @@ for lamp in [na, hgcd]:
 
     slope = odr_result.beta[0]
     sigma_slope = odr_result.sd_beta[0]
+    intercept = odr_result.beta[1]
 
     # Verdet constant and uncertainty
-    V = slope / d
+    V = abs(slope / d)
     sigma_V = np.sqrt((sigma_slope / d)**2 + (slope * sigma_d / d**2)**2)
-    print(f"{lamp.name}:  V = {V} ± {sigma_V:.4f} rad/(T·m)")
+    print(f"{lamp.name}: V = {V} ± {sigma_V:.4f} rad/(T·m)")
 
 
     # Eignefrequency calculations
@@ -94,7 +95,7 @@ for lamp in [na, hgcd]:
 
     dn = compute_delta_n(theta_max_rad, lamp.wavelength)
     sigma_dn = sigma_delta_n(sigma_max_rad, lamp.wavelength)
-    print(f"Δn at I={I_max}A:      Δn = ({dn:.6f} ± {sigma_dn:.6f})")
+    print(f"Δn at I={I_max}A: Δn = ({dn:.6f} ± {sigma_dn:.6f})")
 
 
     results[lamp.name] = {
@@ -107,7 +108,7 @@ for lamp in [na, hgcd]:
         'slope': slope,
     }
 
-    plot_faraday_rotation(lamp, B, thetas, sigmas, sigma_B, slope)
+    plot_faraday_rotation(lamp, B, thetas, sigmas, sigma_B, slope, intercept)
 
     spectra_data = []
     for current in SPECTRA_TO_PLOT[lamp.name]:

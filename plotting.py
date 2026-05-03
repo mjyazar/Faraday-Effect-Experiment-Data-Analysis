@@ -19,6 +19,7 @@ def plot_spectrum(spectrum, fit_angles, fit_intensities, lamp_name, save_dir="Pl
     fig.tight_layout()
     Path(save_dir).mkdir(parents=True, exist_ok=True)
     fig.savefig(f"{save_dir}/{spectrum.current}A.png")
+    plt.close(fig)
 
 
 def plot_spectra_combined(spectra_data, lamp_name, save_dir="Plots/Spectra"):
@@ -40,9 +41,11 @@ def plot_spectra_combined(spectra_data, lamp_name, save_dir="Plots/Spectra"):
     fig.tight_layout()
     Path(save_dir).mkdir(parents=True, exist_ok=True)
     fig.savefig(f"{save_dir}/{lamp_name} Combined.png", dpi=150)
+    plt.close(fig)
 
 
-def plot_faraday_rotation(lamp, B, thetas, sigmas, sigma_B, slope, save_dir="Plots/Faraday Rotations"):
+
+def plot_faraday_rotation(lamp, B, thetas, sigmas, sigma_B, slope, intercept=0.0, save_dir="Plots/Faraday Rotations"):
     fig, ax = plt.subplots(figsize=(8, 5))
 
     ax.errorbar(B, thetas, yerr=sigmas, xerr=sigma_B, fmt='none', capsize=5, color='red', zorder=3)
@@ -57,5 +60,5 @@ def plot_faraday_rotation(lamp, B, thetas, sigmas, sigma_B, slope, save_dir="Plo
     ax.legend()
     fig.tight_layout()
     Path(save_dir).mkdir(parents=True, exist_ok=True)
-    fig.savefig(f"{save_dir}/{lamp.name} Faraday Rotation.png", dpi=150)
+    fig.savefig(f"{save_dir}/{lamp.name} Faraday Rotation.png")
     plt.close(fig)

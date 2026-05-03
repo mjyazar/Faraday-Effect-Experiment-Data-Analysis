@@ -31,7 +31,7 @@ class Spectrum:
         fit_intensities = malus_law(fit_angles, *param)
         
         min_angle = param[1] + 90
-        dmin_angle = np.sqrt(param_cov[1, 1])
+        dmin_angle = max(np.sqrt(param_cov[1, 1]), sigma_angle)
         #print(f"Current: {self.current}A")
         #print(f"Minimum angle: {min_angle:.2f} ± {dmin_angle:.2f}, {self.angles[np.argmin(self.intensities)]}\n")
 
@@ -51,9 +51,13 @@ class Lamp:
     
     def _load_spectra(self):
         for file_path in sorted(Path(self.data_directory).glob("*.csv")):
+            stem = file_path.stem
 
-            if file_path.stem == "No Field":
+            if stem == "No Field":
                 self.zero_field = Spectrum(0, file_path)
+
+            elif stem in ['+0A', '-0A']:
+                continue
 
             else:
                 current = int(file_path.stem.split('A')[0])
