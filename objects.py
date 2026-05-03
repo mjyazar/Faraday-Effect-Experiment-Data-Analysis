@@ -14,7 +14,6 @@ class Spectrum:
 
     def find_min(self):
         def malus_law(theta, I0, phi, offset):
-
             return I0 * np.cos(np.radians(theta - phi))**2 + offset
 
         # guess initial parameters for optimising curve fitting
@@ -23,7 +22,10 @@ class Spectrum:
             self.angles[self.intensities.argmin()] - 90,
             self.intensities.min()
         ]
-        param, param_cov = curve_fit(malus_law, self.angles, self.intensities, p0 = p0)
+    
+        sigma_I = sigma_intensity * np.ones_like(self.intensities)
+        param, param_cov = curve_fit(malus_law, self.angles, self.intensities, 
+                                     p0 = p0, sigma=sigma_I, absolute_sigma=True)
 
         fit_angles      = np.linspace(self.angles.min(), self.angles.max(), 300)
         fit_intensities = malus_law(fit_angles, *param)
@@ -40,6 +42,7 @@ class Lamp:
     def __init__(self, name, wavelength, data_directory):
         self.name = name
         self.wavelength = wavelength
+        self.omega = 2 * np.pi * c / wavelength
         self.data_directory = data_directory
         self.zero_field = None
         self.spectra = {}
@@ -47,16 +50,13 @@ class Lamp:
 
     
     def _load_spectra(self):
-
         for file_path in sorted(Path(self.data_directory).glob("*.csv")):
-            print(f"Loading file: {file_path}")
 
             if file_path.stem == "No Field":
                 self.zero_field = Spectrum(0, file_path)
 
             else:
                 current = int(file_path.stem.split('A')[0])
-                print(f"Extracted current: {current}A\n")
 
                 s = Spectrum(current, file_path)
                 self.spectra[current] = s
@@ -72,4 +72,3 @@ class Lamp:
             sigmas.append(np.sqrt(dphi**2 + dphi0**2))
 
         return np.array(currents), np.array(thetas), np.array(sigmas)
-
