@@ -87,9 +87,9 @@ for lamp in [na, hgcd]:
     # Eignefrequency calculations
     omega_0 = compute_omega_0(V, lamp.omega)
     d_omega_0 = sigma_omega_0(V, sigma_V, lamp.omega, omega_0)
-    omega_0_THz = omega_0 / 1e12
-    d_omega_0_THz = d_omega_0 / 1e12
-    print(f"Eigenfrequency: ω₀ = ({omega_0_THz:.4f} ± {d_omega_0_THz:.4f}) × 10¹² rad/s")
+    omega_0_PHz = omega_0 / 1e15
+    d_omega_0_PHz = d_omega_0 / 1e15
+    print(f"Eigenfrequency: ω₀ = ({omega_0_PHz:.4f} ± {d_omega_0_PHz:.4f}) × 10¹⁵ rad/s")
 
     # Δn at maximum rotation calculations
     idx_max = np.argmax(np.abs(thetas))
