@@ -5,7 +5,7 @@ from objects import *
 from config import *
 
 
-def plot_spectrum(spectrum, fit_angles, fit_intensities, lamp_name, save_dir="Plots/Spectra"):
+def plot_spectrum(lamp, spectrum, fit_angles, fit_intensities, lamp_name, save_dir="Plots/Spectra"):
 
     fig, ax = plt.subplots(figsize=(8, 5))
 
@@ -16,9 +16,10 @@ def plot_spectrum(spectrum, fit_angles, fit_intensities, lamp_name, save_dir="Pl
     ax.set_ylabel('Intensity (a.u.)')
     ax.set_title(f'{lamp_name} — {spectrum.current}A spectrum')
     ax.legend()
+    ax.grid(True, alpha=0.2)
     fig.tight_layout()
     Path(save_dir).mkdir(parents=True, exist_ok=True)
-    fig.savefig(f"{save_dir}/{spectrum.current}A.png")
+    fig.savefig(f"{save_dir}/{lamp.name} {spectrum.current}A.png")
     plt.close(fig)
 
 
@@ -34,16 +35,21 @@ def plot_spectra_combined(spectra_data, lamp_name, save_dir="Plots/Spectra"):
         ax.scatter(spectrum.angles, spectrum.intensities, color=color, marker='x', zorder=3, s=20)
         ax.plot(fit_angles, fit_intensities, color=color, label=f'{spectrum.current}A')
 
+    # Add colorbar for current
+    sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+    sm.set_array([]) 
+    cbar = fig.colorbar(sm, ax=ax)
+    cbar.set_label('Current (A)')
+
     ax.set_xlabel('Analyser angle (θ°)')
     ax.set_ylabel('Intensity')
     ax.set_title(f'{lamp_name} Spectra')
     ax.legend(fontsize=8, ncol=2)
-    ax.grid(True, alpha=0.3)
+    ax.grid(True, alpha=0.2)
     fig.tight_layout()
     Path(save_dir).mkdir(parents=True, exist_ok=True)
     fig.savefig(f"{save_dir}/{lamp_name} Combined.png", dpi=150)
     plt.close(fig)
-
 
 
 def plot_faraday_rotation(lamp, B, thetas, sigmas, sigma_B, slope, intercept=0.0, save_dir="Plots/Faraday Rotations"):
@@ -53,13 +59,19 @@ def plot_faraday_rotation(lamp, B, thetas, sigmas, sigma_B, slope, intercept=0.0
     ax.scatter(B, thetas, color='red', marker='x', label='Data', zorder=4)
 
     B_fit = np.linspace(B.min(), B.max(), 300)
-    ax.plot(B_fit, np.degrees(slope * B_fit), color='steelblue', label='ODR linear fit')
+    ax.plot(B_fit, np.degrees(slope * B_fit + intercept), color='black', label='ODR Linear Fit')
     
     ax.set_xlabel('B (T)')
     ax.set_ylabel('θ (degrees)')
-    ax.set_title(f'{lamp.name} — Faraday Rotation')
+    if lamp.name == 'Na':
+        ax.set_title(f'Na Faraday Rotation (λ = {lamp.wavelength*1e9:.0f}nm)')
+    else:
+        ax.set_title(f'{lamp.name} + Green 520nm Bandpass Filter Faraday Rotation (λ = {lamp.wavelength*1e9:.0f}nm)')
     ax.legend()
+    ax.grid(True, alpha=0.2)
+    ax.axhline(0, color='gray', lw=0.5)
+    ax.axvline(0, color='gray', lw=0.5)
     fig.tight_layout()
     Path(save_dir).mkdir(parents=True, exist_ok=True)
-    fig.savefig(f"{save_dir}/{lamp.name} Faraday Rotation.png")
+    fig.savefig(f"{save_dir}/{lamp.name} Faraday Rotation.png", dpi=200)
     plt.close(fig)
