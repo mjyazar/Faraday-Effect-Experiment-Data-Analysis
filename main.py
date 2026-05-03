@@ -35,6 +35,11 @@ def sigma_delta_n(sigma_theta_rad, wavelength):
     return wavelength / (np.pi * d) * sigma_theta_rad
 
 
+def approximation_validity(omega, B_max, omega_0):
+    """Check qωB / m(ω₀²-ω²) ≪ 1."""
+    return q * omega * B_max / (m_e * (omega_0**2 - omega**2))
+
+
 # Define the directory where data files are stored
 BASE_DIR = Path(__file__).resolve().parent
 HGCD_DIR = BASE_DIR / "Data" / "HgCd"
@@ -95,8 +100,10 @@ for lamp in [na, hgcd]:
 
     dn = compute_delta_n(theta_max_rad, lamp.wavelength)
     sigma_dn = sigma_delta_n(sigma_max_rad, lamp.wavelength)
-    print(f"Δn at I={I_max}A: Δn = ({dn:.6f} ± {sigma_dn:.6f})")
+    print(f"Δn at I={I_max}A: Δn = ({dn*1e7:.5f} ± {sigma_dn*1e7:.5f}) × 10⁻⁷")
 
+    epsilon = approximation_validity(lamp.omega, abs(B_max), omega_0)
+    print(f"Approximation check: qωB/m(ω₀²-ω²) = {epsilon:.10f}  ({'✓ valid' if epsilon < 0.1 else '✗ questionable'})")
 
     results[lamp.name] = {
         'V': V, 'sigma_V': sigma_V,
@@ -116,7 +123,7 @@ for lamp in [na, hgcd]:
         min_angle, dmin_angle, fit_angles, fit_intensities = spectrum.find_min()
         spectra_data.append((spectrum, fit_angles, fit_intensities))
 
-        plot_spectrum(spectrum, fit_angles, fit_intensities, lamp.name)
+        plot_spectrum(lamp, spectrum, fit_angles, fit_intensities, lamp.name)
     
     plot_spectra_combined(spectra_data, lamp.name)
 
@@ -125,25 +132,26 @@ print(f"\n{'═'*40}")
 print("         Cross-lamp comparison")
 print(f"{'═'*40}")
 
-omega_0_Na     = results['Na']['omega_0']
+omega_0_Na = results['Na']['omega_0']
 sigma_omega_0_Na = results['Na']['sigma_omega_0']
-omega_HgCd     = hgcd.omega
+omega_HgCd = hgcd.omega
 
-V_pred         = predicted_verdet(omega_HgCd, omega_0_Na)
+V_pred_HgCd = predicted_verdet(omega_HgCd, omega_0_Na)
 
 # error on V_pred from sigma_omega_0_Na
 dV_pred_domega0 = -(n**2-1) * q * omega_HgCd**2 * 2 * omega_0_Na / \
                   (2 * n * m_e * c * (omega_0_Na**2 - omega_HgCd**2)**2)
-sigma_V_pred   = abs(dV_pred_domega0) * sigma_omega_0_Na
+sigma_V_pred = abs(dV_pred_domega0) * sigma_omega_0_Na
 
 V_meas     = results['HgCd']['V']
 sigma_V_meas = results['HgCd']['sigma_V']
 
 print(f"Measured  V_HgCd  = {V_meas:.4f} ± {sigma_V_meas:.4f} rad/(T·m)")
-print(f"Predicted V_HgCd  = {V_pred:.4f} ± {sigma_V_pred:.4f} rad/(T·m)  (from ω₀_Na)")
+print(f"Predicted V_HgCd  = {V_pred_HgCd:.4f} ± {sigma_V_pred:.4f} rad/(T·m)  (from ω₀_Na)")
 
 # check consistency within combined uncertainty
-discrepancy = abs(V_meas - V_pred)
+discrepancy = abs(V_meas - V_pred_HgCd)
 combined_sigma = np.sqrt(sigma_V_meas**2 + sigma_V_pred**2)
 n_sigma = discrepancy / combined_sigma
 print(f"Discrepancy: {discrepancy:.4f} rad/(T·m)  =  {n_sigma:.1f}σ")
+
