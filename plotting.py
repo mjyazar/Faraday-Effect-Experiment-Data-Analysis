@@ -19,7 +19,7 @@ def plot_spectrum(lamp, spectrum, fit_angles, fit_intensities, lamp_name, save_d
     ax.grid(True, alpha=0.2)
     fig.tight_layout()
     Path(save_dir).mkdir(parents=True, exist_ok=True)
-    fig.savefig(f"{save_dir}/{lamp.name} {spectrum.current}A.png")
+    fig.savefig(f"{save_dir}/{lamp.name} {spectrum.current}A.png", dpi=200)
     plt.close(fig)
 
 
@@ -48,7 +48,7 @@ def plot_spectra_combined(spectra_data, lamp_name, save_dir="Plots/Spectra"):
     ax.grid(True, alpha=0.2)
     fig.tight_layout()
     Path(save_dir).mkdir(parents=True, exist_ok=True)
-    fig.savefig(f"{save_dir}/{lamp_name} Combined.png", dpi=150)
+    fig.savefig(f"{save_dir}/{lamp_name} Combined.png", dpi=200)
     plt.close(fig)
 
 
