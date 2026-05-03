@@ -112,7 +112,7 @@ for lamp in [na, hgcd]:
 
     spectra_data = []
     for current in SPECTRA_TO_PLOT[lamp.name]:
-        spectrum = lamp.spectra[current]
+        spectrum = lamp.zero_field if current == 0 else lamp.spectra[current]
         min_angle, dmin_angle, fit_angles, fit_intensities = spectrum.find_min()
         spectra_data.append((spectrum, fit_angles, fit_intensities))
 
