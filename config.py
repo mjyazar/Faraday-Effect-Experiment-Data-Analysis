@@ -9,7 +9,7 @@ q = 1.602e-19
 m_e = 9.109e-31
 c = 2.998e8
 
-sigma_intensity = 0.05
+sigma_intensity = 0.005
 sigma_angle     = 0.5
 sigma_current   = 0.1
 
