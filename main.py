@@ -89,21 +89,22 @@ for lamp in [na, hgcd]:
     d_omega_0 = sigma_omega_0(V, sigma_V, lamp.omega, omega_0)
     omega_0_PHz = omega_0 / 1e15
     d_omega_0_PHz = d_omega_0 / 1e15
-    print(f"Eigenfrequency: ω₀ = ({omega_0_PHz:.4f} ± {d_omega_0_PHz:.4f}) × 10¹⁵ rad/s")
+    print(f"Eigenfrequency: ω₀ = ({omega_0_PHz:.4f} ± {d_omega_0_PHz:.4f}) e15 rad/s")
 
     # Δn at maximum rotation calculations
     idx_max = np.argmax(np.abs(thetas))
     theta_max_rad = thetas_rad[idx_max]
+    print(f"Maximum rotation: θ_max = {thetas[idx_max]:.2f}° ± {sigmas[idx_max]:.2f}° at I = {currents[idx_max]}A")
     sigma_max_rad = sigmas_rad[idx_max]
     I_max = currents[idx_max]
     B_max = B[idx_max]
 
     dn = compute_delta_n(theta_max_rad, lamp.wavelength)
     sigma_dn = sigma_delta_n(sigma_max_rad, lamp.wavelength)
-    print(f"Δn at I={I_max}A: Δn = ({dn*1e7:.5f} ± {sigma_dn*1e7:.5f}) × 10⁻⁷")
+    print(f"Δn at I={I_max}A: Δn = ({dn*1e7:.5f} ± {sigma_dn*1e7:.5f}) x e-7")
 
     epsilon = approximation_validity(lamp.omega, abs(B_max), omega_0)
-    print(f"Approximation check: qωB/m(ω₀²-ω²) = {epsilon:.10f}  ({'✓ valid' if epsilon < 0.1 else '✗ questionable'})")
+    print(f"Approximation check: qωB/m(ω₀²-ω²) = {epsilon:.10f}  ({'valid' if epsilon < 0.1 else 'questionable'})")
 
     results[lamp.name] = {
         'V': V, 'sigma_V': sigma_V,
@@ -128,6 +129,7 @@ for lamp in [na, hgcd]:
     plot_spectra_combined(spectra_data, lamp.name)
 
 
+
 print(f"\n{'═'*40}")
 print("         Cross-lamp comparison")
 print(f"{'═'*40}")
@@ -147,11 +149,10 @@ V_meas     = results['HgCd']['V']
 sigma_V_meas = results['HgCd']['sigma_V']
 
 print(f"Measured  V_HgCd  = {V_meas:.4f} ± {sigma_V_meas:.4f} rad/(T·m)")
-print(f"Predicted V_HgCd  = {V_pred_HgCd:.4f} ± {sigma_V_pred:.4f} rad/(T·m)  (from ω₀_Na)")
+print(f"Predicted V_HgCd  = {V_pred_HgCd:.4f} ± {sigma_V_pred:.4f} rad/(T·m)  (from ω0_Na)")
 
 # check consistency within combined uncertainty
 discrepancy = abs(V_meas - V_pred_HgCd)
 combined_sigma = np.sqrt(sigma_V_meas**2 + sigma_V_pred**2)
 n_sigma = discrepancy / combined_sigma
 print(f"Discrepancy: {discrepancy:.4f} rad/(T·m)  =  {n_sigma:.1f}σ")
-
